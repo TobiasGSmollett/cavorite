@@ -1,7 +1,5 @@
 require "./spec_helper"
 
-include Cavorite
-
 describe Cavorite do
 
   it "single thread" do
