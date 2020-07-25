@@ -24,7 +24,15 @@ TODO: Write usage instructions here
 
 ## Development
 
-TODO: Write development instructions here
+Required `-Dpreview_mt` option when you run codes of this repository.
+
+```sh
+$ crystal spec -Dpreview_mt 
+$ crystal spec -Dpreview_mt spec/<filename>.cr
+
+# You can see benchmarks.
+$ crystal run --release -Dpreview_mt bench/<filename>.cr
+```
 
 ## Contributing
 
