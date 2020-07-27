@@ -1,6 +1,6 @@
 require "./actor_message"
-require "./queue"
-require "./strategy"
+require "./mailbox"
+require "./scheduler"
 
 module Cavorite
   class ActorRef
@@ -8,56 +8,76 @@ module Cavorite
 
   enum ActorState
     Idle
-    Become
-    Die
+    Occupied
+    Stopped
   end
 
-  abstract class Actor
-    @mailbox : Queue(ActorMessage)
-    @strategy : Strategy
-    @handler : Proc(ActorMessage, Nil)
-    @suspended : Atomic(Int32)
+  # R is response type
+  abstract class Actor(R)    
+    @mailbox : Mailbox
+    @scheduler : Scheduler
+    @handler : Proc(ActorMessage, R)
+    @interlocked : Atomic(ActorState)
     @on_error : Proc(Exception, Nil)
+    
+    @response_channel : Channel(R)
 
-    def initialize(&@handler : ActorMessage -> Nil)
-      @mailbox = Queue(ActorMessage).new
-      @strategy = Strategy.sequential
-      @suspended = Atomic(Int32).new(1)
+    def initialize(&@handler : ActorMessage -> R)
+      @mailbox = Mailbox.new
+      @scheduler = Scheduler.naive
+      @interlocked = Atomic(ActorState).new(ActorState::Idle)
 
-      @strategy.set(->act(Int32))
+      @scheduler.set(->act(Int32))
       @on_error = ->(ex : Exception){}
+
+      @response_channel = Channel(R).new
     end
 
     def send(msg : ActorMessage)
-      @mailbox.enqueue(msg)
+      msg.is_required_response = true
+      @mailbox.post(msg)
       try_schedule
+      @response_channel
+    end
+
+    def send!(msg : ActorMessage)
+      @mailbox.post(msg)
+      try_schedule
+    end
+
+    def stop
+      @interlocked.set(ActorState::Stopped)
+    end
+
+    def reset
+      @mailbox.move_to_dead_letters
+      @interlocked.set(ActorState::Idle)
     end
 
     # TODO: implement
     def become
     end
 
-    # TODO: implement
-    def supervise
-    end
-
     private def try_schedule
-      _, is_success = @suspended.compare_and_set(1, 0)      
+      _, is_success = @interlocked.compare_and_set(ActorState::Idle, ActorState::Occupied)
       schedule if is_success
     end
 
     private def schedule
-      @strategy.set(->act(Int32)).call
+      @scheduler.set(->act(Int32)).call
     end
 
-    private def act(n : Int32)
+    private def act(n : Int32): Nil
       n.times do |i|
-        msg = @mailbox.dequeue
-        break if msg.nil?
-        begin
-          @handler.call(msg)
-        rescue ex
-          @on_error.call(ex)
+        break if @mailbox.empty?
+
+        system_message = @mailbox.dequeue_system_message
+        unless system_message.nil?
+          handle_system_message(system_message)
+        else
+          user_message = @mailbox.dequeue_user_message
+          break if user_message.nil?
+          handle_user_message(user_message)
         end
       end
 
@@ -65,6 +85,25 @@ module Cavorite
         try_schedule
       else
         schedule
+      end
+    end
+
+    private def handle_system_message(system_message : SystemMessage)
+      case system_message
+      when Die
+        stop
+      when Restart
+        reset
+      end
+    end
+
+    private def handle_user_message(user_message : UserMessage)
+      begin
+        result = @handler.call(user_message)
+        @response_channel.send(result)
+      rescue ex
+        @interlocked.set(ActorState::Idle)
+        @on_error.call(ex)
       end
     end
   end
