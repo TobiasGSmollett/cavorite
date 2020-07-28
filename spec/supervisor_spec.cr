@@ -2,7 +2,7 @@ require "./spec_helper"
 
 describe Cavorite do
   it "create supervisor" do
-    actor = TestActor.new(0)
+    actor = TestActor.new
     response_channel = actor.send(TestMessage.new("test"))
     response_channel.receive.should eq "1"
 

@@ -10,10 +10,18 @@ include Cavorite::Core
 include Cavorite::Utils
 
 class TestActor < Actor(Int32, String)
-  def handler(state : Int32, msg : ActorMessage): {Int32, String}
-    new_state = state + 1
-    result = new_state.to_s
-    {new_state, result}
+
+  @state : Int32
+
+  def initialize
+    super
+    @state = 0
+  end
+
+  def handler(msg : ActorMessage): String
+    @state += 1
+    result = @state.to_s
+    result
   end
 end
 

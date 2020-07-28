@@ -25,9 +25,9 @@ module Cavorite::Core
 
     setter supervisor_on_error : Proc(Exception, Nil)
 
-    abstract def handler(state : S, msg : ActorMessage): {S, R}
+    abstract def handler(msg : ActorMessage): R
 
-    def initialize(@state : S)
+    def initialize
       @mailbox = Mailbox.new
       @scheduler = Scheduler.naive
       @interlocked = Atomic(ActorState).new(ActorState::Idle)
@@ -105,8 +105,7 @@ module Cavorite::Core
 
     private def handle_user_message(user_message : UserMessage)
       begin
-        new_state, result = handler(@state, user_message)
-        @state = new_state
+        result = handler(user_message)
         @response_channel.send(result) if user_message.is_required_response
       rescue ex
         @interlocked.set(ActorState::Idle)

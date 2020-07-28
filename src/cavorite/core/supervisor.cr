@@ -12,12 +12,11 @@ module Cavorite::Core
     @strategy : Strategy
     @children : Array(Actor(Any, Any))
 
-    def handler(state, message): {Nil, Nil}
-      {nil, nil}
+    def handler(message): Nil
     end
 
     def initialize(@strategy : Strategy)
-      super(nil)
+      super()
       @children = [] of Actor(Any, Any)
     end
 
