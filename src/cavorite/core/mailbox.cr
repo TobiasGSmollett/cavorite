@@ -1,6 +1,6 @@
-require "./queue"
+require "../utils/queue"
 
-module Cavorite
+module Cavorite::Core
   class Mailbox
     @@dead_letters : Queue(UserMessage) = Queue(UserMessage).new
 

@@ -1,4 +1,4 @@
-module Cavorite
+module Cavorite::Utils
   private class Node(T)
     getter value : T?
     property next : Atomic(Node(T)?)

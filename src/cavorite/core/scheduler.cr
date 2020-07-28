@@ -1,4 +1,5 @@
-module Cavorite
+
+module Cavorite::Core
 
   module Scheduler
     @act : Proc(Int32, Nil)

@@ -2,7 +2,7 @@ require "./actor_message"
 require "./mailbox"
 require "./scheduler"
 
-module Cavorite
+module Cavorite::Core
   class ActorRef
   end
 
@@ -12,17 +12,22 @@ module Cavorite
     Stopped
   end
 
-  # R is response type
-  abstract class Actor(R)    
+  # S : type of state
+  # R : type of response
+  abstract class Actor(S, R)   
     @mailbox : Mailbox
     @scheduler : Scheduler
-    @handler : Proc(ActorMessage, R)
     @interlocked : Atomic(ActorState)
     @on_error : Proc(Exception, Nil)
     
+    @supervisor_on_error : Proc(Exception, Nil)
     @response_channel : Channel(R)
 
-    def initialize(&@handler : ActorMessage -> R)
+    setter supervisor_on_error : Proc(Exception, Nil)
+
+    abstract def handler(state : S, msg : ActorMessage): {S, R}
+
+    def initialize(@state : S)
       @mailbox = Mailbox.new
       @scheduler = Scheduler.naive
       @interlocked = Atomic(ActorState).new(ActorState::Idle)
@@ -30,6 +35,7 @@ module Cavorite
       @scheduler.set(->act(Int32))
       @on_error = ->(ex : Exception){}
 
+      @supervisor_on_error = ->(ex : Exception){}
       @response_channel = Channel(R).new
     end
 
@@ -54,22 +60,22 @@ module Cavorite
       @interlocked.set(ActorState::Idle)
     end
 
-    # TODO: implement
-    def become
-    end
-
     private def try_schedule
       _, is_success = @interlocked.compare_and_set(ActorState::Idle, ActorState::Occupied)
       schedule if is_success
     end
 
     private def schedule
+      @interlocked.set(ActorState::Occupied)
       @scheduler.set(->act(Int32)).call
     end
 
     private def act(n : Int32): Nil
       n.times do |i|
-        break if @mailbox.empty?
+        if @mailbox.empty?
+          @interlocked.set(ActorState::Idle)
+          break
+        end
 
         system_message = @mailbox.dequeue_system_message
         unless system_message.nil?
@@ -99,11 +105,13 @@ module Cavorite
 
     private def handle_user_message(user_message : UserMessage)
       begin
-        result = @handler.call(user_message)
-        @response_channel.send(result)
+        new_state, result = handler(@state, user_message)
+        @state = new_state
+        @response_channel.send(result) if user_message.is_required_response
       rescue ex
         @interlocked.set(ActorState::Idle)
         @on_error.call(ex)
+        @supervisor_on_error.call(ex)
       end
     end
   end

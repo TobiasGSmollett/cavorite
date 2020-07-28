@@ -2,11 +2,9 @@ require "./spec_helper"
 
 describe Cavorite do
   it "create supervisor" do
-    actor = TestActor.new do |msg|
-      msg.as(TestMessage).text + "abc"
-    end
+    actor = TestActor.new(0)
     response_channel = actor.send(TestMessage.new("test"))
-    response_channel.receive.should eq "testabc"
+    response_channel.receive.should eq "1"
 
     supervisor = Supervisor.new(Supervisor::Strategy::OneForOne)
     supervisor.add_child(actor)

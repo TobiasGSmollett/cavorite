@@ -1,4 +1,4 @@
-module Cavorite
+module Cavorite::Core
   abstract class ActorMessage
     @is_required_response : Bool = false
 
