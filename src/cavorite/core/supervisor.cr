@@ -12,9 +12,6 @@ module Cavorite::Core
     @strategy : Strategy
     @children : Array(Actor(Any, Any))
 
-    def handler(message): Nil
-    end
-
     def initialize(@strategy : Strategy)
       super()
       @children = [] of Actor(Any, Any)
@@ -25,7 +22,7 @@ module Cavorite::Core
       @children << child.as(Actor(Any, Any))
     end
 
-    def reset(error_child_index : Int32)
+    private def reset(error_child_index : Int32)
       restart_message = Restart.new
       case @strategy
       when Strategy::OneForOne
@@ -37,6 +34,9 @@ module Cavorite::Core
           @children[i].send(restart_message)
         end
       end
+    end
+
+    private def handler(message): Nil
     end
   end
 end

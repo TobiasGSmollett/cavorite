@@ -51,11 +51,11 @@ module Cavorite::Core
       try_schedule
     end
 
-    def stop
+    private def stop
       @interlocked.set(ActorState::Stopped)
     end
 
-    def reset
+    private def reset
       @mailbox.move_to_dead_letters
       @interlocked.set(ActorState::Idle)
     end
