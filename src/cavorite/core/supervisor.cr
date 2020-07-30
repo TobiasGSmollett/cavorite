@@ -10,29 +10,30 @@ module Cavorite::Core
     end
 
     @strategy : Strategy
-    @children : Array(Actor(Any, Any))
+    # TODO: use radix tree
+    @children : Hash(String, Actor(Any, Any))
 
-    def initialize(@strategy : Strategy)
-      super()
-      @children = [] of Actor(Any, Any)
+    getter children : Hash(String, Actor(Any, Any))
+
+    def initialize(name : String, @strategy : Strategy)
+      super(name)
+      @children = {} of String => Actor(Any, Any)
     end
 
     def add_child(child : Actor(S, R)) forall S, R
-      child.supervisor_on_error = ->(ex : Exception){ reset(@children.size) }
-      @children << child.as(Actor(Any, Any))
+      child.supervisor_on_error = ->(ex : Exception){ reset(child.name) }
+      @children[child.name] = child.as(Actor(Any, Any))
     end
 
-    private def reset(error_child_index : Int32)
+    private def reset(error_child_index : String)
       restart_message = Restart.new
       case @strategy
       when Strategy::OneForOne
         @children[error_child_index].send(restart_message)
       when Strategy::OneForAll
-        @children.each { |child| child.send(restart_message) }
+        @children.each { |name, child| child.send(restart_message) }
       when Strategy::RestForOne
-        (error_child_index..(@children.size - 1)).each do |i| 
-          @children[i].send(restart_message)
-        end
+        raise "unimplemented"
       end
     end
 

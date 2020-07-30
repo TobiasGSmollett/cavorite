@@ -13,8 +13,8 @@ class TestActor < Actor(Int32, String)
 
   @state : Int32
 
-  def initialize
-    super
+  def initialize(name : String)
+    super(name)
     @state = 0
   end
 

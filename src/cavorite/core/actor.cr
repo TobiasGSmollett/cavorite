@@ -3,9 +3,6 @@ require "./mailbox"
 require "./scheduler"
 
 module Cavorite::Core
-  class ActorRef
-  end
-
   enum ActorState
     Idle
     Occupied
@@ -14,7 +11,8 @@ module Cavorite::Core
 
   # S : type of state
   # R : type of response
-  abstract class Actor(S, R)   
+  abstract class Actor(S, R)
+    @name : String
     @mailbox : Mailbox
     @scheduler : Scheduler
     @interlocked : Atomic(ActorState)
@@ -23,11 +21,12 @@ module Cavorite::Core
     @supervisor_on_error : Proc(Exception, Nil)
     @response_channel : Channel(R)
 
+    getter name : String
     setter supervisor_on_error : Proc(Exception, Nil)
 
     abstract def handler(msg : ActorMessage): R
 
-    def initialize
+    def initialize(@name : String)
       @mailbox = Mailbox.new
       @scheduler = Scheduler.naive
       @interlocked = Atomic(ActorState).new(ActorState::Idle)
@@ -72,10 +71,7 @@ module Cavorite::Core
 
     private def act(n : Int32): Nil
       n.times do |i|
-        if @mailbox.empty?
-          @interlocked.set(ActorState::Idle)
-          break
-        end
+        break if @mailbox.empty?
 
         system_message = @mailbox.dequeue_system_message
         unless system_message.nil?
