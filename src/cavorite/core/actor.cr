@@ -71,7 +71,10 @@ module Cavorite::Core
 
     private def act(n : Int32): Nil
       n.times do |i|
-        break if @mailbox.empty?
+        if @mailbox.empty?
+          @interlocked.set(ActorState::Idle)
+          break
+        end
 
         system_message = @mailbox.dequeue_system_message
         unless system_message.nil?
