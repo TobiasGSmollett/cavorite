@@ -15,7 +15,7 @@ module Cavorite::Core
       @@systems[@name] = self
     end
 
-    def add(actor : Actor(Any, Any))
+    def add(actor : ActorMarker)
       @user_guardian.add_child(actor)
     end
 
@@ -29,7 +29,7 @@ module Cavorite::Core
       actor.send(msg)
     end
 
-    def get(actor_ref : ActorRef): Actor(Any, Any)?
+    def get(actor_ref : ActorRef)
       result = @user_guardian
       # TODO: validate actor_ref.path
       actor_ref.path.split('/').each do |child_name|
@@ -37,7 +37,7 @@ module Cavorite::Core
         result = result.children[child_name]?
       end
       return nil if result.nil?
-      result.as(Actor(Any, Any))
+      result
     end
   end
 end

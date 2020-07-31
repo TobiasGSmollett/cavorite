@@ -3,6 +3,8 @@ require "../ext/any"
 
 module Cavorite::Core
   class Supervisor < Actor(Nil, Nil)
+    include ActorMarker
+
     enum Strategy
       OneForOne
       OneForAll
@@ -11,18 +13,24 @@ module Cavorite::Core
 
     @strategy : Strategy
     # TODO: use radix tree
-    @children : Hash(String, Actor(Any, Any))
+    @children : Hash(String, ActorMarker)
 
-    getter children : Hash(String, Actor(Any, Any))
+    getter children : Hash(String, ActorMarker)
 
     def initialize(name : String, @strategy : Strategy)
       super(name)
-      @children = {} of String => Actor(Any, Any)
+      @children = {} of String => ActorMarker
     end
 
-    def add_child(child : Actor(S, R)) forall S, R
+    def initialize(name : String, @strategy : Strategy, children : Array(ActorMarker))
+      super(name)
+      @children = {} of String => ActorMarker
+      children.each { |child| @children[child.name] = child }
+    end
+
+    def add_child(child : ActorMarker)
       child.supervisor_on_error = ->(ex : Exception){ reset(child.name) }
-      @children[child.name] = child.as(Actor(Any, Any))
+      @children[child.name] = child
     end
 
     private def reset(error_child_index : String)

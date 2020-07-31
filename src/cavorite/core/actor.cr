@@ -9,9 +9,14 @@ module Cavorite::Core
     Stopped
   end
 
+  module ActorMarker
+  end
+
   # S : type of state
   # R : type of response
   abstract class Actor(S, R)
+    include ActorMarker
+    
     @name : String
     @mailbox : Mailbox
     @scheduler : Scheduler
