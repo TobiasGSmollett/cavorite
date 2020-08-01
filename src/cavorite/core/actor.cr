@@ -14,7 +14,7 @@ module Cavorite::Core
 
   # S : type of state
   # R : type of response
-  abstract class Actor(S, R)
+  abstract class Actor(R)
     include ActorMarker
     
     @name : String

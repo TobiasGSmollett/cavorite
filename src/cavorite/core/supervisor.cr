@@ -2,7 +2,7 @@ require "./actor"
 require "../ext/any"
 
 module Cavorite::Core
-  class Supervisor < Actor(Nil, Nil)
+  class Supervisor < Actor(Nil)
     include ActorMarker
 
     enum Strategy

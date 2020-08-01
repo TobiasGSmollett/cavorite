@@ -9,7 +9,7 @@ require "../src/cavorite/utils/*"
 include Cavorite::Core
 include Cavorite::Utils
 
-class TestActor < Actor(Int32, String)
+class TestActor < Actor(String)
 
   @state : Int32
 
