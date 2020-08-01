@@ -12,7 +12,6 @@ module Cavorite::Core
   module ActorMarker
   end
 
-  # S : type of state
   # R : type of response
   abstract class Actor(R)
     include ActorMarker
