@@ -7,3 +7,7 @@ authors:
 crystal: 0.35.1
 
 license: MIT
+
+dependencies:
+  msgpack:
+    github: crystal-community/msgpack-crystal

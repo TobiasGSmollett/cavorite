@@ -26,9 +26,9 @@ class TestActor < Actor(String)
 end
 
 class TestMessage < UserMessage
-
-  getter text : String
+  @text : String
 
   def initialize(@text : String)
+    super()
   end
 end

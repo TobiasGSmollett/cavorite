@@ -14,8 +14,9 @@ describe Cavorite do
     
     system.add(supervisor)
     actor_ref = ActorRef.new("test_supervisor/test_actor")
-    a = system.get(actor_ref).as(TestActor)
-    c = a.send(TestMessage.new("abc"))
+    actor_ref.system = "test_system"
+    test_message = TestMessage.new("abc")
+    c = Cavorite::Core::System.send(actor_ref, test_message).as(Channel(String))
     c.receive.should eq "1"
   end
 end

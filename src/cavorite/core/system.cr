@@ -1,3 +1,5 @@
+require "http/server"
+
 require "./supervisor"
 
 module Cavorite::Core
@@ -19,18 +21,18 @@ module Cavorite::Core
       @user_guardian.add_child(actor)
     end
 
-    def send!(actor_ref : ActorRef, msg : UserMessage)
+    def self.send!(actor_ref : ActorRef, msg : UserMessage)
       get(actor_ref).send!(msg)
     end
 
-    def send(actor_ref : ActorRef, msg : UserMessage)
+    def self.send(actor_ref : ActorRef, msg : UserMessage)
       actor = get(actor_ref)
       return nil if actor.nil?
       actor.send(msg)
     end
 
-    def get(actor_ref : ActorRef)
-      result = @user_guardian
+    private def self.get(actor_ref : ActorRef)
+      result = @@systems[actor_ref.system].@user_guardian
       # TODO: validate actor_ref.path
       actor_ref.path.split('/').each do |child_name|
         return nil if !result.is_a?(Supervisor)

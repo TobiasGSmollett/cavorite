@@ -6,10 +6,11 @@ module Cavorite::Core
     @port : Int32
     @path : String
 
+    property system : String
     getter path : String
 
     def initialize(@path : String)
-      @protocol = "cavorite"
+      @protocol = "http"
       @system = ""
       @address = "127.0.0.1"
       @port = 8080
