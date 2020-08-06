@@ -8,22 +8,11 @@ module Cavorite::Core
     CAVORITE_HEADER = "X-Cavorite-Message-Type"
 
     @@http_server : HTTP::Server?
-    @@message_types = {} of String => ActorMessage.class
-
-    def self.message_type(type_name : String)
-      @@message_types[type_name]
-    end
 
     def initialize(port : Int32 = 8080)
       if @@http_server.nil?
         @@http_server = HTTP::Server.new(->http_request_handler(HTTP::Server::Context))
         @@http_server.as(HTTP::Server).bind_tcp port
-      end
-
-      if @@message_types.empty?
-        ActorMessage.all_message_types.each do |message_type|
-          @@message_types[message_type.to_s] = message_type
-        end
       end
     end
 
@@ -34,7 +23,7 @@ module Cavorite::Core
       
       message_type_name = context.request.headers[CAVORITE_HEADER]?
       return if message_type_name.nil?
-      message_type = @@message_types[message_type_name]?
+      message_type = ActorMessageTypeRepository.get(message_type_name)
       return if message_type.nil?
       msg = message_type.from_msgpack(body)
       actor_ref = ActorRef.new(context.request.path)

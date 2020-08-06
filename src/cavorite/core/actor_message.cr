@@ -37,4 +37,23 @@ module Cavorite::Core
 
   class UserMessage < ActorMessage
   end
+
+  module ActorMessageTypeRepository
+    extend self
+
+    @@message_types = {} of String => ActorMessage.class
+
+    def init
+      return if !@@message_types.empty?
+      ActorMessage.all_message_types.each do |message_type|
+        @@message_types[message_type.to_s] = message_type
+      end
+    end
+
+    def get(message_type_name : String)
+      @@message_types[message_type_name]?
+    end
+  end
 end
+
+ActorMessageTypeRepository.init
