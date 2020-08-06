@@ -23,7 +23,9 @@ module Cavorite::Core
     end
 
     def self.send!(actor_ref : ActorRef, msg : ActorMessage)
-      get(actor_ref).send!(msg)
+      actor = get(actor_ref)
+      return nil if actor.nil?
+      actor.send!(msg)
     end
 
     def self.send(actor_ref : ActorRef, msg : ActorMessage)

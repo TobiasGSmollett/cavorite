@@ -2,11 +2,23 @@ require "./spec_helper"
 
 describe Cavorite do
   it "create rest api" do
-    rest_api = RestApi.new
-    #actor = TestActor.new("test_actor")
-    #test_message = TestMessage.new("test")
-    #response_channel = actor.send(test_message)
-    #response_channel.receive.should eq "1"
+    actor_system = Cavorite::Core::System.new("test_system")
+    actor = TestActor.new("test_actor")
+    test_message = TestMessage.new("test")
+
+    actor_system.add(actor)
+
+    actor_ref = ActorRef.new("test_actor")
+    actor_ref.system = "test_system"
+
+    spawn do
+      a = RestApi.new
+      a.run_server
+    end
+    sleep 1
+    
+    response_channel = RestApi.send(actor_ref, test_message, String)
+    response_channel.receive.should eq "1"
   end
 
   # it "send message via rest api" do

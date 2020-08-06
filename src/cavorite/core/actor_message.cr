@@ -3,14 +3,24 @@ require "msgpack"
 module Cavorite::Core
   class ActorMessage
     @is_required_response : Bool = false
-    @message_type : String = {{ @type.name.stringify }}
-
     property is_required_response : Bool
 
+    macro inherited
+    @message_type : String = {{ @type.name.stringify }}
     property message_type : String
+    end
 
     def self.all_message_types
       {{ @type.all_subclasses }}
+    end
+
+    def to_msgpack
+      h = Hash(String, MessagePack::Type).new
+
+      {% for var in @type.instance_vars %}
+      h["{{ var.name }}"] = @{{ var.name }}
+      {% end %}
+      h.to_msgpack
     end
 
     def self.from_msgpack(io : IO)
