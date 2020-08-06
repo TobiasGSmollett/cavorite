@@ -6,6 +6,7 @@ module Cavorite::Core
   class System
     @@systems = {} of String => System
 
+    @name : String
     @root_guardian : Supervisor
     @user_guardian : Supervisor
     @system_guardian : Supervisor
@@ -21,11 +22,11 @@ module Cavorite::Core
       @user_guardian.add_child(actor)
     end
 
-    def self.send!(actor_ref : ActorRef, msg : UserMessage)
+    def self.send!(actor_ref : ActorRef, msg : ActorMessage)
       get(actor_ref).send!(msg)
     end
 
-    def self.send(actor_ref : ActorRef, msg : UserMessage)
+    def self.send(actor_ref : ActorRef, msg : ActorMessage)
       actor = get(actor_ref)
       return nil if actor.nil?
       actor.send(msg)

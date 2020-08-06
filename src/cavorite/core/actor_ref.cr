@@ -7,6 +7,7 @@ module Cavorite::Core
     @path : String
 
     property system : String
+    property port : Int32
     getter path : String
 
     def initialize(@path : String)

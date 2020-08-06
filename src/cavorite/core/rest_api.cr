@@ -1,31 +1,44 @@
 require "http/client"
 require "http/server"
 require "uri"
+#require "msgpack"
 
-module Cavorite
+module Cavorite::Core
   class RestApi
     CAVORITE_HEADER = "X-Cavorite-Message-Type"
 
     @@http_server : HTTP::Server?
-    @@message_types : Array(ActorMessage.class) = [] of ActorMessage.class
+    @@message_types = {} of String => ActorMessage.class
 
-    def initialize
+    def self.message_type(type_name : String)
+      @@message_types[type_name]
+    end
+
+    def initialize(port : Int32 = 8080)
       if @@http_server.nil?
         @@http_server = HTTP::Server.new(->http_request_handler(HTTP::Server::Context))
-        @@http_server.as(HTTP::Server).bind_tcp 8080
-      end      
+        @@http_server.as(HTTP::Server).bind_tcp port
+      end
+
+      if @@message_types.empty?
+        ActorMessage.all_message_types.each do |message_type|
+          @@message_types[message_type.to_s] = message_type
+        end
+      end
     end
 
     private def http_request_handler(context : HTTP::Server::Context): Nil
       system_name = context.request.@uri.as(URI).user
-      path = context.request.path
+      body = context.request.body
+      return if body.nil?
+      
       message_type_name = context.request.headers[CAVORITE_HEADER]?
-      return if message_type.nil?
+      return if message_type_name.nil?
       message_type = @@message_types[message_type_name]?
       return if message_type.nil?
-      body = context.request.body
       msg = message_type.from_msgpack(body)
-      Cavorite::Core::System.send(msg)
+      actor_ref = ActorRef.new(context.request.path)
+      Cavorite::Core::System.send(actor_ref, msg)
     end
 
     def self.send!(actor_ref : ActorRef, msg : ActorMessage)

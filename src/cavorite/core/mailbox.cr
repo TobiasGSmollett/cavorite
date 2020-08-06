@@ -27,8 +27,10 @@ module Cavorite::Core
     def post(actor_message : ActorMessage)
       if actor_message.is_a?(SystemMessage)
         @system_messages.enqueue(actor_message)
-      else
+      elsif actor_message.is_a?(UserMessage)
         @user_messages.enqueue(actor_message)
+      else
+        raise "you find bug"
       end
     end
 

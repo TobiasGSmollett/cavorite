@@ -26,9 +26,7 @@ class TestActor < Actor(String)
 end
 
 class TestMessage < UserMessage
-  @text : String
-
+  property text : String
   def initialize(@text : String)
-    super()
   end
 end

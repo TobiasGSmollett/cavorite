@@ -1,3 +1,5 @@
+require "msgpack"
+
 require "./actor"
 require "../ext/any"
 
