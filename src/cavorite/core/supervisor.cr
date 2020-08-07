@@ -1,7 +1,6 @@
 require "msgpack"
 
 require "./actor"
-require "../ext/any"
 
 module Cavorite::Core
   class Supervisor < Actor(Nil)

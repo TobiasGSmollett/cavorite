@@ -2,7 +2,7 @@ require "spec"
 require "../src/cavorite"
 require "../src/cavorite/*"
 require "../src/cavorite/core/*"
-require "../src/cavorite/ext/*"
+require "../src/cavorite/http/*"
 require "../src/cavorite/utils/*"
 
 
@@ -30,3 +30,5 @@ class TestMessage < UserMessage
   def initialize(@text : String)
   end
 end
+
+Cavorite::HTTP::Server.run
