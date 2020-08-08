@@ -2,6 +2,8 @@ require "../utils/queue"
 
 module Cavorite::Core
   class Mailbox
+    include Cavorite::Utils
+
     @@dead_letters : Queue(UserMessage) = Queue(UserMessage).new
 
     @system_messages : Queue(SystemMessage)

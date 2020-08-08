@@ -66,4 +66,4 @@ module Cavorite::Core
   end
 end
 
-ActorMessageTypeRepository.init
+Cavorite::Core::ActorMessageTypeRepository.init

@@ -1,6 +1,7 @@
-# TODO: Write documentation for `Cavorite`
+require "./cavorite/core/*"
+require "./cavorite/http/*"
+require "./cavorite/utils/*"
+
 module Cavorite
   VERSION = "0.1.0"
-
-  # TODO: Put your code here
 end
