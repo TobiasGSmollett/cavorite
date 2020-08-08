@@ -18,7 +18,7 @@ module Cavorite::Core
 
     getter children : Hash(String, ActorMarker)
 
-    def initialize(name : String, @strategy : Strategy)
+    def initialize(name : String, @strategy : Strategy = Strategy::OneForOne)
       super(name)
       @children = {} of String => ActorMarker
     end

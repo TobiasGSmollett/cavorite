@@ -1,6 +1,6 @@
 # Cavorite
 
-Cavorite is a work-in-progress actor model library for Crystal.
+Cavorite is an actor model library for Crystal.
 
 ## Installation
 

@@ -18,8 +18,20 @@ module Cavorite::Core
       @@systems[@name] = self
     end
 
-    def add(actor : ActorMarker)
-      @user_guardian.add_child(actor)
+    def create(path : String, actor_name : String, actor_type : Actor(T).class) forall T
+      actor = actor_type.new(actor_name)
+      add(path, actor)
+    end
+
+    def add(path : String, actor : ActorMarker): ActorRef?
+      current_actor = @user_guardian
+      path.lchop('/').split('/').each do |child_name|
+        break if child_name.empty?
+        current_actor = current_actor.children[child_name]?
+        return nil unless current_actor.is_a?(Supervisor)
+      end
+      current_actor.add_child(actor)
+      ActorRef.new(@name, "#{path}/#{actor.name}")
     end
 
     def self.send!(actor_ref : ActorRef, msg : ActorMessage)
@@ -37,7 +49,7 @@ module Cavorite::Core
     private def self.get(actor_ref : ActorRef)
       result = @@systems[actor_ref.system].@user_guardian
       # TODO: validate actor_ref.path
-      actor_ref.path.split('/').each do |child_name|
+      actor_ref.path.lchop('/').split('/').each do |child_name|
         return nil if !result.is_a?(Supervisor)
         result = result.children[child_name]?
       end
