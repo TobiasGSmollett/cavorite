@@ -2,18 +2,22 @@ require "http/client"
 require "http/server"
 require "uri"
 
-module Cavorite::HTTP
-  module Server
-    extend self
+require "./cluster/k8s_cluster"
 
-    @@http_server : ::HTTP::Server?
+module Cavorite::Remote
+  class Server
+    @http_server : ::HTTP::Server
+    @cluster : Cluster
+
+    def initialize
+      @http_server = ::HTTP::Server.new(->request_handler(::HTTP::Server::Context))
+      # TODO: parametalize service name
+      @cluster = K8sCluster.new("my-service")
+    end
 
     def run(port : Int32 = 8080)
-      if @@http_server.nil?
-        @@http_server = ::HTTP::Server.new(->request_handler(::HTTP::Server::Context))
-      end
-      @@http_server.as(::HTTP::Server).bind_tcp port
-      spawn { @@http_server.as(::HTTP::Server).listen }
+      @http_server.as(::HTTP::Server).bind_tcp port
+      spawn { @http_server.as(::HTTP::Server).listen }
     end
 
     # :nodoc:
@@ -22,13 +26,14 @@ module Cavorite::HTTP
       actor_ref = parse_actor_ref(context)
 
       return if msg.nil? || actor_ref.nil?
+      #return handle_cluster_message(msg) if msg.is_a?(ClusterMessage)
 
       if msg.is_required_response
-        Cavorite::Core::System.send!(actor_ref, msg)
-      else
         channel = Cavorite::Core::System.send(actor_ref, msg).as(Channel(String))
         response_body = channel.receive
         context.response.print response_body
+      else
+        Cavorite::Core::System.send!(actor_ref, msg)
       end
     end
 

@@ -1,7 +1,7 @@
 require "http/client"
 require "uri"
 
-module Cavorite::HTTP
+module Cavorite::Remote
   module RestApi
     extend self
 
@@ -15,6 +15,7 @@ module Cavorite::HTTP
     end
 
     def send(actor_ref : ActorRef, msg : ActorMessage, response_type : T.class) forall T
+      msg.is_required_response = true
       channel = Channel(T).new
       uri = URI.parse(actor_ref.to_s)
       headers = ::HTTP::Headers { 

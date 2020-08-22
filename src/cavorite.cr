@@ -1,5 +1,5 @@
 require "./cavorite/core/*"
-require "./cavorite/http/*"
+require "./cavorite/remote/*"
 require "./cavorite/utils/*"
 
 module Cavorite

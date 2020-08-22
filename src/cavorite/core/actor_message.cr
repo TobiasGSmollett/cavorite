@@ -1,3 +1,5 @@
+require "uri"
+
 require "msgpack"
 
 module Cavorite::Core
@@ -38,6 +40,40 @@ module Cavorite::Core
   end
 
   class Die < SystemMessage
+  end
+
+  class ClusterMessage < SystemMessage
+  end
+
+  class Join < ClusterMessage
+    property uri_string : String
+    def initialize(@uri_string : String)
+    end
+
+    def uri : URI
+      URI.parse(uri_string)
+    end
+
+    def sender_node
+      Cavorite::Remote::Node.new(uri)
+    end
+  end
+
+  class Leave < ClusterMessage
+    property uri_string : String
+    def initialize(@uri_string : String)
+    end
+
+    def uri : URI
+      URI.parse(uri_string)
+    end
+
+    def sender_node
+      Cavorite::Remote::Node.new(uri)
+    end
+  end
+
+  class Ping < ClusterMessage
   end
 
   class Restart < SystemMessage

@@ -2,7 +2,7 @@ require "spec"
 require "../src/cavorite"
 require "../src/cavorite/*"
 require "../src/cavorite/core/*"
-require "../src/cavorite/http/*"
+require "../src/cavorite/remote/*"
 require "../src/cavorite/utils/*"
 
 
@@ -31,4 +31,4 @@ class TestMessage < UserMessage
   end
 end
 
-Cavorite::HTTP::Server.run
+Cavorite::Remote::Server.new.run
