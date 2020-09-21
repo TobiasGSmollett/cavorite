@@ -31,4 +31,9 @@ class TestMessage < UserMessage
   end
 end
 
-Cavorite::Remote::Server.new.run
+TEST_CLUSTER = Cavorite::Remote::K8sCluster.new("my-service")
+Cavorite::Remote::Server.new(TEST_CLUSTER).run
+
+#spawn do 
+#  Cavorite::Remote::Server.new.run(8081)
+#end

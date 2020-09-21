@@ -7,6 +7,10 @@ module Cavorite::Core
     @is_required_response : Bool = false
     property is_required_response : Bool
 
+    # uri string of actor
+    @sender : String = ""
+    property sender : String
+
     macro inherited
     @message_type : String = {{ @type.name.stringify }}
     property message_type : String
@@ -18,7 +22,6 @@ module Cavorite::Core
 
     def to_msgpack
       h = Hash(String, MessagePack::Type).new
-
       {% for var in @type.instance_vars %}
       h["{{ var.name }}"] = @{{ var.name }}
       {% end %}
@@ -33,6 +36,16 @@ module Cavorite::Core
       instance.{{ var.name }} = h["{{ var.name }}"].as({{var.type.name}})
       {% end %}
       instance
+    end
+
+    def sender=(uri : URI)
+      @sender = uri.to_s
+    end
+
+    def sender : URI
+      return nil if @sender.nil?
+      # TODO: error handling
+      URI.parse(@sender)
     end
   end
 
