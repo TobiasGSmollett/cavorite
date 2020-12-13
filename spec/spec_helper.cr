@@ -11,7 +11,7 @@ include Cavorite::Utils
 
 class TestActor < Actor(String)
 
-  @state : Int32
+  getter state : Int32
 
   def initialize(name : String)
     super(name)

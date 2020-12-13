@@ -1,17 +1,18 @@
 require "../spec_helper"
 
 describe Cavorite do
-  #it "create actor" do
-  #  actor = TestActor.new("test_actor")
-  #  test_message = TestMessage.new("test")
-  #  response_channel = actor.send(test_message)
-  #  response_channel.receive.should eq "1"
-  #end
+  it "create actor" do
+    actor = TestActor.new("test_actor")
+    test_message = TestMessage.new("test")
+    actor.send!(test_message)
+    sleep 1
+    actor.state.should eq 1
+  end
 
-  #it "update state in actor" do
-  #  actor = TestActor.new("test_actor")
-  #  (1..1999).each { |i| actor.send!(TestMessage.new("test"))}
-  #  response_channel = actor.send(TestMessage.new("test"))
-  #  response_channel.receive.should eq 2000.to_s
-  #end
+  it "update state in actor" do
+    actor = TestActor.new("test_actor")
+    2000.times { actor.send!(TestMessage.new("test"))}
+    sleep 1
+    actor.state.should eq 2000
+  end
 end
