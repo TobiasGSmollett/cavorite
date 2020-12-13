@@ -40,12 +40,6 @@ module Cavorite::Core
       actor.send!(msg)
     end
 
-    def self.send(actor_ref : ActorRef, msg : ActorMessage)
-      actor = get(actor_ref)
-      return nil if actor.nil?
-      actor.send(msg)
-    end
-
     private def self.get(actor_ref : ActorRef)
       result = @@systems[actor_ref.system].@user_guardian
       # TODO: validate actor_ref.path

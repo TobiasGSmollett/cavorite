@@ -42,13 +42,6 @@ module Cavorite::Core
       @response_channel = Channel(R).new
     end
 
-    def send(msg : ActorMessage)
-      msg.is_required_response = true
-      @mailbox.post(msg)
-      try_schedule
-      @response_channel
-    end
-
     def send!(msg : ActorMessage)
       @mailbox.post(msg)
       try_schedule

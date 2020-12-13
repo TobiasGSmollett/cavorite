@@ -38,9 +38,9 @@ module Cavorite::Core
       restart_message = Restart.new
       case @strategy
       when Strategy::OneForOne
-        @children[error_child_index].send(restart_message)
+        @children[error_child_index].send!(restart_message)
       when Strategy::OneForAll
-        @children.each { |name, child| child.send(restart_message) }
+        @children.each { |name, child| child.send!(restart_message) }
       when Strategy::RestForOne
         raise "unimplemented"
       end

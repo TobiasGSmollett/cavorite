@@ -61,21 +61,6 @@ module Cavorite::Remote
       spawn { HTTP::Client.post(uri, headers, msg.to_msgpack, nil) }
     end
 
-    def send(actor_ref : ActorRef, msg : ActorMessage, response_type : T.class) forall T
-      msg.is_required_response = true
-      channel = Channel(T).new
-      uri = URI.parse(actor_ref.to_s)
-      headers = ::HTTP::Headers { 
-        CAVORITE_ACTOR_SYSTEM_NAME_HEADER => uri.user.as(String),
-        CAVORITE_MESSAGE_TYPE_HEADER => msg.message_type,
-      }
-      spawn do 
-        response = ::HTTP::Client.post(uri, headers, msg.to_msgpack, nil)
-        channel.send(response.body)
-      end
-      channel
-    end
-
     def broadcast!(actor_ref : ActorRef, msg : ActorMessage)
       @cluster.nodes.each do |node|
         uri = remote_actor_ref.to_remote(node).uri
