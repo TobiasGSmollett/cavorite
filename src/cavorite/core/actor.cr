@@ -23,7 +23,6 @@ module Cavorite::Core
     @on_error : Proc(Exception, Nil)
     
     @supervisor_on_error : Proc(Exception, Nil)
-    @response_channel : Channel(R)
 
     getter name : String
     setter supervisor_on_error : Proc(Exception, Nil)
@@ -39,7 +38,6 @@ module Cavorite::Core
       @on_error = ->(ex : Exception){}
 
       @supervisor_on_error = ->(ex : Exception){}
-      @response_channel = Channel(R).new
     end
 
     def send!(msg : ActorMessage)
@@ -101,8 +99,7 @@ module Cavorite::Core
 
     private def handle_user_message(user_message : UserMessage)
       begin
-        result = handler(user_message)
-        @response_channel.send(result) if user_message.is_required_response
+        handler(user_message)
       rescue ex
         @interlocked.set(ActorState::Idle)
         @on_error.call(ex)

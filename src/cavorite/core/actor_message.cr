@@ -4,9 +4,6 @@ require "msgpack"
 
 module Cavorite::Core
   class ActorMessage
-    @is_required_response : Bool = false
-    property is_required_response : Bool
-
     # uri string of actor
     @sender : String = ""
     property sender : String

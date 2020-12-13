@@ -40,13 +40,7 @@ module Cavorite::Remote
 
       actor_ref = parse_actor_ref(context)
       return if actor_ref.nil?
-      #if msg.is_required_response
-      #  channel = Cavorite::Core::System.send(actor_ref, msg).as(Channel(String))
-      #  response_body = channel.receive
-      #  context.response.print response_body
-      #else
-        Cavorite::Core::System.send!(actor_ref, msg)
-      #end
+      Cavorite::Core::System.send!(actor_ref, msg)
     end
 
     # :nodoc:
