@@ -9,7 +9,7 @@ Cavorite is an actor model library for Crystal.
    ```yaml
    dependencies:
      cavorite:
-       github: tobiasgsmollett/cavorite
+       github: tobyapi/cavorite
    ```
 
 2. Run `shards install`
@@ -29,12 +29,12 @@ class HelloActor < Actor(String)
     @count = 0
   end
 
-  def handler(msg : ActorMessage): String
+  def handler(msg : ActorMessage)
     @count += 1
     if msg.is_a?(HelloMessage)
-      "hello #{msg.text} #{@count.to_s}"
+      puts "hello #{msg.text} #{@count.to_s}"
     else
-      "error"
+      puts "error"
     end
   end
 end
@@ -51,8 +51,7 @@ actor_ref = actor_system.create("/hello_supervisor", "hello_actor", HelloActor)
 
 msg = HelloMessage.new("world")
 
-channel = Cavorite::Core::System.send(actor_ref.as(ActorRef), msg)
-puts channel.as(Channel(String)).receive
+Cavorite::Core::System.send!(actor_ref.as(ActorRef), msg) # => hello_actor_system 1
 ```
 
 TODO: Write usage instructions here
@@ -71,7 +70,7 @@ $ crystal run --release -Dpreview_mt bench/<filename>.cr
 
 ## Contributing
 
-1. Fork it (<https://github.com/tobiasgsmollett/cavorite/fork>)
+1. Fork it (<https://github.com/tobyapi/cavorite/fork>)
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
@@ -79,4 +78,4 @@ $ crystal run --release -Dpreview_mt bench/<filename>.cr
 
 ## Contributors
 
-- [tobya](https://github.com/TobiasGSmollett) - creator and maintainer
+- [tobya](https://github.com/tobyapi) - creator and maintainer
