@@ -1,14 +1,14 @@
 module Cavorite::Utils
-  private class Node(T)
-    getter value : T?
-    property next : Atomic(Node(T)?)
-    
-    def initialize(@value = nil)
-      @next = Atomic(Node(T)?).new(nil)
+  class Queue(T)
+    private class Node(T)
+      getter value : T?
+      property next : Atomic(Node(T)?)
+
+      def initialize(@value = nil)
+        @next = Atomic(Node(T)?).new(nil)
+      end
     end
-  end
-  
-  class Queue(T) 
+
     @head : Atomic(Node(T))
     @tail : Atomic(Node(T))
     

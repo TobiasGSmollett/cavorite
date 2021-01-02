@@ -10,6 +10,7 @@ describe Cavorite do
     ref.compare_and_set("test", "new", false, true)
     
     ref.get.should eq({"new", true})
+    
     ref.attempt_mark("new", false).should eq true
     ref.get.should eq({"new", false})
   end
