@@ -18,7 +18,7 @@ module Cavorite::Utils
       end
     end
 
-    class Window(T)
+    private class Window(T)
       property pred : Node(T)
       property curr : Node(T)
 
@@ -37,21 +37,19 @@ module Cavorite::Utils
       end
     end
 
-
     def add(item : T): Bool
       key = item.hash
       loop do
         window : Window(T) = find(@head, key)
         pred : Node(T) = window.pred
         curr : Node(T) = window.curr
-        if curr.key == key
-          return false
-        else
-          node = Node(T).new(item)
-          node.next = AtomicMarkableReference(Node(T)?).new(curr.as(Node(T)?))
-          succ, _ = pred.next.compare_and_set(curr, node, false, false)
-          return true if succ
-        end
+
+        return false if curr.key == key
+        
+        node = Node(T).new(item)
+        node.next = AtomicMarkableReference(Node(T)?).new(curr.as(Node(T)?))
+        succ, _ = pred.next.compare_and_set(curr, node, false, false)
+        return true if succ
       end
     end
 
@@ -62,15 +60,14 @@ module Cavorite::Utils
         window : Window(T) = find(@head, key)
         pred : Node(T) = window.pred
         curr : Node(T) = window.curr
-        if curr.key != key
-          return false
-        else
-          succ, _ = curr.next.get
-          snip = curr.next.attempt_mark(succ, true)
-          next if !snip
-          pred.next.compare_and_set(curr, succ, false, false)
-          return true
-        end
+
+        return false if curr.key != key
+
+        succ, _ = curr.next.get
+        snip = curr.next.attempt_mark(succ, true)
+        next if !snip
+        pred.next.compare_and_set(curr, succ, false, false)
+        return true
       end
     end
 
@@ -82,7 +79,7 @@ module Cavorite::Utils
       curr.key == key
     end
 
-    def find(head : Node, key : UInt64): Window(T)
+    private def find(head : Node, key : UInt64): Window(T)
       pred : Node(T)? = nil
       curr : Node(T)? = nil
       succ : Node(T)? = nil
@@ -104,14 +101,13 @@ module Cavorite::Utils
             succ, marked = curr.as(Node(T)).next.get
           end
           break if flag
-          return Window(T).new(pred.as(Node(T)), curr.as(Node(T))) if curr.as(Node(T)).key >= key
+          if curr.as(Node(T)).key >= key
+            return Window(T).new(pred.as(Node(T)), curr.as(Node(T)))
+          end
           pred = curr
           curr = succ
         end
       end
     end
-
-
-
   end
 end
