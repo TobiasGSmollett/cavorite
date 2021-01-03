@@ -29,7 +29,7 @@ module Cavorite::Utils
     @head : Node(T)
 
     def initialize
-      @head  = Node(T).new(UInt64::MIN)
+      @head = Node(T).new(UInt64::MIN)
       tail = Node(T).new(UInt64::MAX)
       loop do
         result, is_success = @head.as(Node(T)).next.compare_and_set(nil, tail, false, false)
@@ -37,7 +37,7 @@ module Cavorite::Utils
       end
     end
 
-    def add(item : T): Bool
+    def add(item : T) : Bool
       key = item.hash
       loop do
         window : Window(T) = find(@head, key)
@@ -45,7 +45,7 @@ module Cavorite::Utils
         curr : Node(T) = window.curr
 
         return false if curr.key == key
-        
+
         node = Node(T).new(item)
         node.next = AtomicMarkableReference(Node(T)?).new(curr.as(Node(T)?))
         succ, _ = pred.next.compare_and_set(curr, node, false, false)
@@ -53,7 +53,7 @@ module Cavorite::Utils
       end
     end
 
-    def remove(item : T): Bool
+    def remove(item : T) : Bool
       key = item.hash
       snip : Bool = false
       loop do
@@ -71,15 +71,15 @@ module Cavorite::Utils
       end
     end
 
-    def contains(item : T): Bool
+    def contains(item : T) : Bool
       key = item.hash
-      window: Window(T) = find(@head, key)
-      pred: Node(T) = window.pred
-      curr: Node(T) = window.curr
+      window : Window(T) = find(@head, key)
+      pred : Node(T) = window.pred
+      curr : Node(T) = window.curr
       curr.key == key
     end
 
-    private def find(head : Node, key : UInt64): Window(T)
+    private def find(head : Node, key : UInt64) : Window(T)
       pred : Node(T)? = nil
       curr : Node(T)? = nil
       succ : Node(T)? = nil

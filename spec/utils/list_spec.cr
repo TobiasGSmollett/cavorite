@@ -1,12 +1,11 @@
 require "../spec_helper"
 
 describe Cavorite do
-
   it "add on single thread" do
     str = "abcdefghijklmn"
     str2 = "123456"
 
-    list = List(String).new()
+    list = List(String).new
     list.add(str).should eq true
     list.add(str2).should eq true
   end
@@ -14,7 +13,7 @@ describe Cavorite do
   it "contains on single thread" do
     str = "abcdefghijklmn"
     str2 = "123456"
-    list = List(String).new()
+    list = List(String).new
     list.add(str)
     list.add(str2)
 
@@ -26,7 +25,7 @@ describe Cavorite do
   it "removes on single thread" do
     str = "abcdefghijklmn"
     str2 = "123456"
-    list = List(String).new()
+    list = List(String).new
     list.add(str)
     list.add(str2)
 
