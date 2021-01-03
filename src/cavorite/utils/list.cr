@@ -55,6 +55,25 @@ module Cavorite::Utils
       end
     end
 
+    def remove(item : T): Bool
+      key = item.hash
+      snip : Bool = false
+      loop do
+        window : Window(T) = find(@head, key)
+        pred : Node(T) = window.pred
+        curr : Node(T) = window.curr
+        if curr.key != key
+          return false
+        else
+          succ, _ = curr.next.get
+          snip = curr.next.attempt_mark(succ, true)
+          next if !snip
+          pred.next.compare_and_set(curr, succ, false, false)
+          return true
+        end
+      end
+    end
+
     def contains(item : T): Bool
       key = item.hash
       window: Window(T) = find(@head, key)
