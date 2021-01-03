@@ -23,7 +23,7 @@ module Cavorite::Core
       add(path, actor)
     end
 
-    def add(path : String, actor : ActorMarker): ActorRef?
+    def add(path : String, actor : ActorMarker) : ActorRef?
       current_actor = @user_guardian
       path.lchop('/').split('/').each do |child_name|
         break if child_name.empty?

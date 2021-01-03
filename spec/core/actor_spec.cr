@@ -11,7 +11,7 @@ describe Cavorite do
 
   it "update state in actor" do
     actor = TestActor.new("test_actor")
-    2000.times { actor.send!(TestMessage.new("test"))}
+    2000.times { actor.send!(TestMessage.new("test")) }
     sleep 1
     actor.state.should eq 2000
   end

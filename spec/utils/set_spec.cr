@@ -1,7 +1,6 @@
 require "../spec_helper"
 
 describe Cavorite do
-
   it "single thread" do
     set = Cavorite::Utils::Set(String).new
     set.add("a")

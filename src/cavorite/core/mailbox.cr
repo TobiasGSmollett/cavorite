@@ -36,11 +36,11 @@ module Cavorite::Core
       end
     end
 
-    def dequeue_system_message: SystemMessage?
+    def dequeue_system_message : SystemMessage?
       @system_messages.dequeue
     end
 
-    def dequeue_user_message: UserMessage?
+    def dequeue_user_message : UserMessage?
       @user_messages.dequeue
     end
   end

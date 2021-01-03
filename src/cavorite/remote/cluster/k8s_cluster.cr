@@ -9,7 +9,7 @@ module Cavorite::Remote
     def ip_address_list
       domain = "#{@service}.#{@namespace}.svc.cluster.local"
       Socket::Addrinfo.resolve(domain, 53, type: Socket::Type::STREAM)
-      .map { |addrinfo| addrinfo.ip_address.address }
+        .map { |addrinfo| addrinfo.ip_address.address }
     end
   end
 end

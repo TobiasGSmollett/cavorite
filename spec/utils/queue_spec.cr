@@ -1,9 +1,7 @@
 require "../spec_helper"
 
 describe Cavorite do
-
   it "single thread" do
-
     input = [1, 2, 3, 4, 5]
     output = [] of Int32
 
@@ -25,7 +23,7 @@ describe Cavorite do
     (1..10).each do |i|
       spawn do
         input.each { |e| queue.enqueue(e) }
-        wait_group[i-1].send(nil)
+        wait_group[i - 1].send(nil)
       end
     end
 

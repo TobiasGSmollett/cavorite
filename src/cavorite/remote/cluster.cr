@@ -37,6 +37,5 @@ module Cavorite::Remote
         @nodes.delete(msg.sender_node)
       end
     end
-
   end
 end

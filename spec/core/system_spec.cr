@@ -1,7 +1,7 @@
 require "../spec_helper"
 
 describe Cavorite do
-  #it "create system 1" do
+  # it "create system 1" do
   #  system = Cavorite::Core::System.new("test_system")
   #
   #  supervisor = Supervisor.new(
@@ -17,14 +17,14 @@ describe Cavorite do
   #  test_message = TestMessage.new("abc")
   #  c = Cavorite::Core::System.send(actor_ref, test_message).as(Channel(String))
   #  c.receive.should eq "1"
-  #end
+  # end
   #
-  #it "create system 2" do
+  # it "create system 2" do
   #  system = Cavorite::Core::System.new("test_system")
   #  system.create("/", "test_supervisor", Supervisor)
   #  actor_ref = system.create("/test_supervisor", "test_actor", TestActor).as(ActorRef)
   #  test_message = TestMessage.new("abc")
   #  c = Cavorite::Core::System.send(actor_ref, test_message).as(Channel(String))
   #  c.receive.should eq "1"
-  #end
+  # end
 end

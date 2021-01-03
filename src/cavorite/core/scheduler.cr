@@ -1,11 +1,9 @@
-
 module Cavorite::Core
-
   module Scheduler
     @act : Proc(Int32, Nil)
 
     def initialize
-      @act = ->(i : Int32){}
+      @act = ->(i : Int32) {}
     end
 
     def set(@act : Int32 -> Nil)

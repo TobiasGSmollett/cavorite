@@ -30,7 +30,7 @@ module Cavorite::Core
     end
 
     def add_child(child : ActorMarker)
-      child.supervisor_on_error = ->(ex : Exception){ reset(child.name) }
+      child.supervisor_on_error = ->(ex : Exception) { reset(child.name) }
       @children[child.name] = child
     end
 
@@ -46,7 +46,7 @@ module Cavorite::Core
       end
     end
 
-    private def handler(message): Nil
+    private def handler(message) : Nil
     end
   end
 end

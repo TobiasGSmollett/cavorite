@@ -1,6 +1,6 @@
 require "./bench_helper"
 
-N = 100 # Number of Thread
+N =    100 # Number of Thread
 M = 100000 # Number of Operation
 
 Benchmark.bm do |job|
@@ -20,14 +20,14 @@ Benchmark.bm do |job|
     deque = Deque(Int32).new
     mutex = Thread::Mutex.new
     channels = Array(Channel(Nil)).new(N * 2, Channel(Nil).new)
-  
+
     N.times do |i|
       spawn do
         M.times { mutex.synchronize { deque << 0 } }
         channels[i].send(nil)
       end
     end
-  
+
     N.times do |i|
       spawn do
         M.times { mutex.synchronize { deque.shift } }
@@ -48,7 +48,7 @@ Benchmark.bm do |job|
         channels[i].send(nil)
       end
     end
-  
+
     N.times do |i|
       spawn do
         M.times { queue.dequeue }

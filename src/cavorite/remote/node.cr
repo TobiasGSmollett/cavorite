@@ -1,7 +1,7 @@
 module Cavorite::Remote
   struct Node
     DEFAULT_PROTOCOL = "http"
-    DEFAULT_PORT = 8080
+    DEFAULT_PORT     = 8080
 
     getter protocol : String
     getter host : String
@@ -24,8 +24,8 @@ module Cavorite::Remote
 
     def ==(other : Node)
       @protocol == other.protocol &&
-      @host == other.host &&
-      @port == other.port
+        @host == other.host &&
+        @port == other.port
     end
   end
 end

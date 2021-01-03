@@ -17,7 +17,7 @@ module Cavorite::Remote
 
     def run(port : Int32 = 8080)
       @http_server.as(::HTTP::Server).bind_tcp port
-      spawn do 
+      spawn do
         Log.info { "HTTP Server started: port #{port}" }
         @http_server.as(::HTTP::Server).listen
       end

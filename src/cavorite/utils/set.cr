@@ -1,6 +1,5 @@
 module Cavorite::Utils
   class Set(T)
-
     def initialize
       @mutex = Mutex.new
       @set = ::Set(T).new

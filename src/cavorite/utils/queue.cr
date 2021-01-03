@@ -11,11 +11,11 @@ module Cavorite::Utils
 
     @head : Atomic(Node(T))
     @tail : Atomic(Node(T))
-    
+
     def initialize
       @head = @tail = Atomic(Node(T)).new(Node(T).new)
     end
-    
+
     def enqueue(value : T)
       node = Node(T).new(value)
       loop do

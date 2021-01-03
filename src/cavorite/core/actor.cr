@@ -15,19 +15,19 @@ module Cavorite::Core
   # R : type of response
   abstract class Actor(R)
     include ActorMarker
-    
+
     @name : String
     @mailbox : Mailbox
     @scheduler : Scheduler
     @interlocked : Atomic(ActorState)
     @on_error : Proc(Exception, Nil)
-    
+
     @supervisor_on_error : Proc(Exception, Nil)
 
     getter name : String
     setter supervisor_on_error : Proc(Exception, Nil)
 
-    abstract def handler(msg : ActorMessage): R
+    abstract def handler(msg : ActorMessage) : R
 
     def initialize(@name : String)
       @mailbox = Mailbox.new
@@ -35,9 +35,9 @@ module Cavorite::Core
       @interlocked = Atomic(ActorState).new(ActorState::Idle)
 
       @scheduler.set(->act(Int32))
-      @on_error = ->(ex : Exception){}
+      @on_error = ->(ex : Exception) {}
 
-      @supervisor_on_error = ->(ex : Exception){}
+      @supervisor_on_error = ->(ex : Exception) {}
     end
 
     def send!(msg : ActorMessage)
@@ -64,7 +64,7 @@ module Cavorite::Core
       @scheduler.set(->act(Int32)).call
     end
 
-    private def act(n : Int32): Nil
+    private def act(n : Int32) : Nil
       n.times do |i|
         if @mailbox.empty?
           @interlocked.set(ActorState::Idle)

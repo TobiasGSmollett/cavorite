@@ -27,7 +27,7 @@ module Cavorite::Core
 
     def self.from_msgpack(io : IO)
       h = Hash(String, MessagePack::Type).from_msgpack(io)
-      
+
       instance = {{ @type.name }}.allocate
       {% for var in @type.instance_vars %}
       instance.{{ var.name }} = h["{{ var.name }}"].as({{var.type.name}})
@@ -57,6 +57,7 @@ module Cavorite::Core
 
   class Join < ClusterMessage
     property uri_string : String
+
     def initialize(@uri_string : String)
     end
 
@@ -71,6 +72,7 @@ module Cavorite::Core
 
   class Leave < ClusterMessage
     property uri_string : String
+
     def initialize(@uri_string : String)
     end
 
