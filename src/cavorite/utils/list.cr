@@ -1,14 +1,15 @@
+require "./atomic_markable_reference"
+
 module Cavorite::Utils
   class List(T)
     private class Node(T)
-      @item : T?
-      @key : UInt64
-
-      getter next : AtomicMarkableReference(Node(T)?)
+      getter item : T?
+      getter key : UInt64
+      property next : AtomicMarkableReference(Node(T)?)
 
       def initialize(@item : T)
         @key = @item.hash
-        @next = AtomicMarkableReference(Node(T)?).new(nil)
+        @next = AtomicMarkableReference(Node(T)?).new(nil.as(Node(T)?))
       end
 
       def initialize(@key : UInt64)
@@ -21,11 +22,11 @@ module Cavorite::Utils
       property pred : Node(T)
       property curr : Node(T)
 
-      def initialize(@pred : Node, @curr : Node)
+      def initialize(@pred : Node(T), @curr : Node(T))
       end
     end
 
-    @head : Node(T)?
+    @head : Node(T)
 
     def initialize
       @head  = Node(T).new(UInt64::MIN)
@@ -36,30 +37,59 @@ module Cavorite::Utils
       end
     end
 
+
+    def add(item : T): Bool
+      key = item.hash
+      loop do
+        window : Window(T) = find(@head, key)
+        pred : Node(T) = window.pred
+        curr : Node(T) = window.curr
+        if curr.key == key
+          return false
+        else
+          node = Node(T).new(item)
+          node.next = AtomicMarkableReference(Node(T)?).new(curr.as(Node(T)?))
+          succ, _ = pred.next.compare_and_set(curr, node, false, false)
+          return true if succ
+        end
+      end
+    end
+
+    def contains(item : T): Bool
+      key = item.hash
+      window: Window(T) = find(@head, key)
+      pred: Node(T) = window.pred
+      curr: Node(T) = window.curr
+      curr.key == key
+    end
+
     def find(head : Node, key : UInt64): Window(T)
       pred : Node(T)? = nil
       curr : Node(T)? = nil
       succ : Node(T)? = nil
-      marked = [false]
       snip = false
 
-      #retry: while (true) {
-      #  pred = head;
-      #  curr = pred.next.getReference();
-      #  while (true) {
-      #    succ = curr.next.get(marked); 
-      #    while (marked[0]) {           
-      #      snip = pred.next.compareAndSet(curr, succ, false, false);
-      #      if (!snip) continue retry;
-      #      curr = pred.next.getReference();
-      #      succ = curr.next.get(marked);
-      #    }
-      #    if (curr.key >= key)
-      #      return new Window(pred, curr);
-      #    pred = curr;
-      #    curr = succ;
-      #  }
-      #}
+      loop do
+        pred = head
+        curr, _mark = pred.next.get
+        loop do
+          succ, marked = curr.as(Node(T)).next.get
+          flag = false
+          while marked
+            snip = pred.as(Node(T)).next.compare_and_set(curr, succ, false, false)
+            unless snip
+              flag = true
+              break
+            end
+            curr, _ = pred.as(Node(T)).next.get
+            succ, marked = curr.as(Node(T)).next.get
+          end
+          break if flag
+          return Window(T).new(pred.as(Node(T)), curr.as(Node(T))) if curr.as(Node(T)).key >= key
+          pred = curr
+          curr = succ
+        end
+      end
     end
 
 
