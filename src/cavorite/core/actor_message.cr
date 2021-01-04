@@ -7,8 +7,8 @@ require "./actor"
 module Cavorite::Core
   class ActorMessage
     # uri string of actor
-    @sender : Actor? = nil
-    property sender : Actor?
+    @sender : String = ""
+    property sender : String
 
     macro inherited
     @message_type : String = {{ @type.name.stringify }}
