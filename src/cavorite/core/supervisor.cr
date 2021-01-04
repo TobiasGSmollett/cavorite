@@ -3,7 +3,7 @@ require "msgpack"
 require "./actor"
 
 module Cavorite::Core
-  class Supervisor < Actor(Nil)
+  class Supervisor < Actor
     include ActorMarker
 
     enum Strategy

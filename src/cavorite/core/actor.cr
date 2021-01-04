@@ -12,8 +12,7 @@ module Cavorite::Core
   module ActorMarker
   end
 
-  # R : type of response
-  abstract class Actor(R)
+  abstract class Actor
     include ActorMarker
 
     @name : String
@@ -27,7 +26,7 @@ module Cavorite::Core
     getter name : String
     setter supervisor_on_error : Proc(Exception, Nil)
 
-    abstract def handler(msg : ActorMessage) : R
+    abstract def handler(msg : ActorMessage)
 
     def initialize(@name : String)
       @mailbox = Mailbox.new

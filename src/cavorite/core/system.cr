@@ -18,7 +18,7 @@ module Cavorite::Core
       @@systems[@name] = self
     end
 
-    def create(path : String, actor_name : String, actor_type : Actor(T).class) forall T
+    def create(path : String, actor_name : String, actor_type : Actor.class)
       actor = actor_type.new(actor_name)
       add(path, actor)
     end

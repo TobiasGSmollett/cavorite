@@ -2,11 +2,13 @@ require "uri"
 
 require "msgpack"
 
+require "./actor"
+
 module Cavorite::Core
   class ActorMessage
     # uri string of actor
-    @sender : String = ""
-    property sender : String
+    @sender : Actor? = nil
+    property sender : Actor?
 
     macro inherited
     @message_type : String = {{ @type.name.stringify }}

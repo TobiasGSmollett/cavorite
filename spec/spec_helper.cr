@@ -8,7 +8,7 @@ require "../src/cavorite/utils/*"
 include Cavorite::Core
 include Cavorite::Utils
 
-class TestActor < Actor(String)
+class TestActor < Actor
   getter state : Int32
 
   def initialize(name : String)
