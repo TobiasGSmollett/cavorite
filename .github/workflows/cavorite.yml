@@ -11,7 +11,7 @@ jobs:
           - {os: ubuntu-latest, crystal: latest}
           - {os: ubuntu-latest, crystal: nightly}
           - {os: macos-latest}
-          - {os: windows-latest}
+          # - {os: windows-latest}
     runs-on: ${{matrix.os}}
 
     steps:
@@ -21,5 +21,5 @@ jobs:
         crystal: 0.36.1
     - run: shards install
     - run: crystal spec -Dpreview_mt
-    - run: crystal tool format && git diff --exit-code
-      if: matrix.crystal == 'latest'
+    # - run: crystal tool format && git diff --exit-code
+    #   if: matrix.crystal == 'latest'
