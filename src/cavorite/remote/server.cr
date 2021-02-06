@@ -1,7 +1,7 @@
 require "http/client"
 require "http/server"
 require "json"
-require "log"
+require "logger"
 require "uri"
 
 require "./cluster/k8s_cluster"
@@ -18,7 +18,8 @@ module Cavorite::Remote
     def run(port : Int32 = 8080)
       @http_server.as(::HTTP::Server).bind_tcp port
       spawn do
-        Log.info { "HTTP Server started: port #{port}" }
+        log = Logger.new(STDOUT, level: Logger::WARN)
+        log.info { "HTTP Server started: port #{port}" }
         @http_server.as(::HTTP::Server).listen
       end
     end
