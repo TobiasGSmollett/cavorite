@@ -26,7 +26,7 @@ module Cavorite::Core
   class Sequential
     include Scheduler
 
-    def call(i : Int32 = 1024)
+    def call(i : Int32 = 1024): Nil
       @act.call(i)
     end
   end
@@ -34,7 +34,7 @@ module Cavorite::Core
   class Naive
     include Scheduler
 
-    def call(i : Int32 = 1024)
+    def call(i : Int32 = 1024): Nil
       spawn { @act.call(i) }
     end
   end
