@@ -11,5 +11,3 @@ license: MIT
 dependencies:
   msgpack:
     github: crystal-community/msgpack-crystal
-  logger:
-    github: crystal-lang/logger.cr
